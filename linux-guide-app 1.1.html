@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Pocket Guide v1.1 - Interactive Learning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d9ff;
+            --primary-dark: #00a8cc;
+            --accent: #ff006e;
+            --accent-warm: #ff9500;
+            --bg-dark: #0a0e27;
+            --bg-darker: #050811;
+            --text-light: #ffffff;
+            --text-muted: #b0b9c1;
+            --border: #1a2332;
+            --success: #00ff9f;
+            --warning: #ffb703;
+            --card-bg: #0f1729;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, #1a0033 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, #1a0033 100%);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Scroll behavior */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 14, 39, 0.95);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--border);
+            padding: 0.4rem;
+            border-radius: 6px;
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .mode-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: var(--bg-dark);
+        }
+
+        .mode-btn:hover:not(.active) {
+            color: var(--primary);
+        }
+
+        /* Difficulty Badges */
+        .difficulty-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.3rem 0.7rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .difficulty-beginner {
+            background: rgba(0, 255, 159, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(0, 255, 159, 0.4);
+        }
+
+        .difficulty-professional {
+            background: rgba(255, 150, 0, 0.2);
+            color: var(--accent-warm);
+            border: 1px solid rgba(255, 150, 0, 0.4);
+        }
+
+        .hidden-beginner {
+            display: none;
+        }
+
+        .hidden-professional {
+            display: none;
+        }
+
+        .mode-beginner .hidden-professional {
+            display: none;
+        }
+
+        .mode-beginner .hidden-beginner {
+            display: inline;
+        }
+
+        .mode-professional .hidden-professional {
+            display: inline;
+        }
+
+        .mode-professional .hidden-beginner {
+            display: none;
+        }
+
+        .section-pro-only {
+            display: none;
+        }
+
+        .mode-professional .section-pro-only {
+            display: block;
+        }
+
+        .section-beginner-only {
+            display: block;
+        }
+
+        .mode-professional .section-beginner-only {
+            display: none;
+        }
+
+        /* Mode indicator */
+        .mode-info {
+            background: rgba(0, 217, 255, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .mode-info.pro {
+            background: rgba(255, 150, 0, 0.05);
+            border-left-color: var(--accent-warm);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin-bottom: 1rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .search-box {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1rem;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, var(--card-bg), #1a2540);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), transparent);
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(0, 217, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* Syntax Examples */
+        .syntax-example {
+            background: var(--bg-darker);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .syntax-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-warm);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .syntax-code {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--success);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--primary);
+            color: var(--bg-dark);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .syntax-example:hover .copy-btn {
+            opacity: 1;
+        }
+
+        .copy-btn:active {
+            background: var(--primary-dark);
+            transform: scale(0.95);
+        }
+
+        /* Info Boxes */
+        .info-box {
+            border-left: 4px solid var(--accent-warm);
+            background: rgba(255, 149, 0, 0.05);
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        .info-box.note {
+            border-left-color: var(--primary);
+            background: rgba(0, 217, 255, 0.05);
+        }
+
+        .info-box.success {
+            border-left-color: var(--success);
+            background: rgba(0, 255, 159, 0.05);
+        }
+
+        /* Interactive Sections */
+        .interactive-section {
+            background: linear-gradient(135deg, var(--card-bg), #1a2540);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .interactive-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .command-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .command-item {
+            background: var(--bg-darker);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .command-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 32px rgba(0, 217, 255, 0.1);
+        }
+
+        .command-name {
+            font-family: 'Monaco', monospace;
+            color: var(--success);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .command-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .command-example {
+            background: rgba(0, 217, 255, 0.05);
+            border-left: 3px solid var(--primary);
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-family: 'Monaco', monospace;
+            font-size: 0.85rem;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 4rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            .header-content {
+                flex-wrap: wrap;
+                width: 100%;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .mode-toggle {
+                position: static;
+                transform: none;
+                margin-left: auto;
+                margin-right: 1rem;
+            }
+
+            nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--bg-dark);
+                border-bottom: 1px solid var(--border);
+                flex-direction: column;
+                gap: 0;
+                padding: 1rem;
+            }
+
+            nav.active {
+                display: flex;
+            }
+
+            nav a {
+                padding: 0.75rem;
+            }
+
+            .hero {
+                padding: 2rem 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            main {
+                padding: 0 1rem 2rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                gap: 0.5rem;
+            }
+
+            .tab-btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .interactive-section {
+                padding: 1.5rem 1rem;
+            }
+
+            .interactive-section h2 {
+                font-size: 1.4rem;
+            }
+
+            .command-list {
+                grid-template-columns: 1fr;
+            }
+
+            .syntax-code {
+                font-size: 0.8rem;
+            }
+
+            .copy-btn {
+                opacity: 1;
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                font-size: 14px;
+            }
+
+            header {
+                padding: 0.75rem;
+            }
+
+            .logo {
+                gap: 0.5rem;
+                font-size: 1.2rem;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero p {
+                font-size: 0.9rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .card h3 {
+                font-size: 1.1rem;
+            }
+
+            .syntax-example {
+                padding: 0.75rem;
+            }
+
+            .info-box {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Smooth Transitions */
+        .card, .command-item, nav a, .tab-btn, .copy-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(5, 8, 17, 0.85);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--card-bg), #1a2540);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 95%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            padding: 0;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: rgba(15, 23, 41, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-family: 'Monaco', monospace; margin: 0;
+        }
+
+        .close-modal {
+            color: var(--text-muted);
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 1.5rem;
+            top: 1.2rem;
+            transition: color 0.3s;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: var(--accent);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-section {
+            margin-bottom: 2rem;
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section h3 {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-section p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .example-block {
+            background: var(--bg-darker);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .example-desc {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .example-code-area {
+            position: relative;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">⌘</div>
+                <span>Linux Guide</span>
+            </div>
+            <div class="mode-toggle">
+                <button class="mode-btn active" onclick="setMode('beginner')">🟢 Beginner</button>
+                <button class="mode-btn" onclick="setMode('professional')">🔷 Pro</button>
+            </div>
+            <button class="nav-toggle" onclick="toggleNav()">☰</button>
+            <nav id="mainNav">
+                <a href="#basics">Basics</a>
+                <a href="#filesystem">Filesystem</a>
+                <a href="#commands">Commands</a>
+                <a href="#processes">Processes</a>
+                <a href="#users">Users</a>
+                <a href="#networking">Networking</a>
+                <a href="#terminal">Terminal</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Linux Pocket Guide</h1>
+        <p>Master essential Linux commands and concepts with interactive examples</p>
+        
+        <div id="modeInfo" class="mode-info">
+            <strong>🟢 Beginner Mode:</strong> Start with the fundamentals. Clear explanations, simple examples, and core concepts for newcomers.
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search commands..." onkeyup="searchContent()">
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('basics', this)">Basics</button>
+            <button class="tab-btn" onclick="showTab('filesystem', this)">Filesystem</button>
+            <button class="tab-btn" onclick="showTab('commands', this)">Commands</button>
+            <button class="tab-btn" onclick="showTab('processes', this)">Processes</button>
+            <button class="tab-btn" onclick="showTab('users', this)">Users</button>
+            <button class="tab-btn" onclick="showTab('networking', this)">Networking</button>
+            <button class="tab-btn" onclick="showTab('terminal', this)">🖥️ Terminal</button>
+        </div>
+
+        <!-- Basics Section -->
+        <div id="basics" class="tab-content">
+            <div class="interactive-section">
+                <h2>🚀 Getting Started with Linux</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Linux is a powerful, open-source operating system. Here's what you need to know:</p>
+                
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">🎯</div>What is Linux?</h3>
+                        <p>Linux is an open-source operating system kernel created by Linus Torvalds. It powers everything from servers to smartphones.</p>
+                        <div class="info-box note">
+                            Linux is the core of the operating system. A "distribution" (or distro) combines Linux with other software to create a complete OS.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">💻</div>Shell Interface</h3>
+                        <p>The shell is your command-line interface to Linux. It interprets commands and communicates with the operating system.</p>
+                        <div class="info-box success">
+                            Popular shells: Bash (most common), Zsh, Fish, and Ksh.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">📦</div>Distributions</h3>
+                        <p>Different Linux distros bundle the kernel with various tools. Ubuntu, Fedora, Debian, and CentOS are popular choices.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Check your distro</div>
+                            <code class="syntax-code">cat /etc/os-release</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🔧</div>Kernel & Modules</h3>
+                        <p>The Linux kernel is the core managing hardware resources, memory, processes, and device drivers through loadable kernel modules.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Inspect kernel & modules</div>
+                            <code class="syntax-code">uname -r           # Kernel version
+lsmod              # List loaded modules
+modinfo module_name # Module details
+cat /proc/version  # Detailed version info</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🗂️</div>Init Systems</h3>
+                        <p>Init systems (systemd, sysVinit, OpenRC) manage services and boot sequence. systemd is the modern standard on most distributions.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Systemd commands</div>
+                            <code class="syntax-code">systemctl status service
+systemctl start|stop|restart service
+systemctl enable service  # Enable on boot
+journalctl -u service     # View service logs</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">📊</div>System Architecture</h3>
+                        <p>Understanding system architecture including CPU, memory hierarchy, I/O subsystems, and kernel space vs. user space interactions.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Architecture inspection</div>
+                            <code class="syntax-code">lscpu              # CPU architecture
+dmidecode          # Hardware info
+cat /proc/cpuinfo  # CPU details
+cat /proc/meminfo  # Memory details</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filesystem Section -->
+        <div id="filesystem" class="tab-content" style="display:none;">
+            <div class="interactive-section">
+                <h2>📁 Filesystem & Directory Structure</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Understanding the Linux directory hierarchy is essential for navigation.</p>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">🌳</div>Root Directory (/)</h3>
+                        <p>The top-level directory containing all files and folders on your system.</p>
+                        <div class="info-box">
+                            <strong>Key directories:</strong><br/>
+                            /bin - Essential commands<br/>
+                            /etc - Configuration files<br/>
+                            /home - User directories<br/>
+                            /usr - User programs<br/>
+                            /var - Variable data
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">🏠</div>Home Directory</h3>
+                        <p>Your personal directory where you store files. Represented by the tilde (~) symbol.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Navigate to home</div>
+                            <code class="syntax-code">cd ~
+pwd    # Print working directory</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">🔍</div>Path Navigation</h3>
+                        <p>Paths can be absolute (from root) or relative (from current directory).</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Path examples</div>
+                            <code class="syntax-code"># Absolute path
+/home/username/documents
+
+# Relative path
+./documents
+../parent_folder</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🔗</div>Inode & Hard Links</h3>
+                        <p>Inodes store metadata for files. Hard links reference the same inode while symbolic links point to file paths.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Inode operations</div>
+                            <code class="syntax-code">ls -i              # Show inode numbers
+ln file hardlink   # Create hard link
+ln -s file symlink # Create soft link
+stat file          # Detailed inode info
+find / -inum 12345 # Find by inode</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">📦</div>Filesystem Types</h3>
+                        <p>Linux supports multiple filesystem types (ext4, btrfs, XFS, NFS). Each optimized for different use cases and performance characteristics.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Filesystem inspection</div>
+                            <code class="syntax-code">df -T             # Show filesystem types
+mount             # Mounted filesystems
+tune2fs -l device # ext4 details
+blkid             # Block device UUIDs
+lsblk             # Block device tree</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">⚡</div>File Descriptors & Pipes</h3>
+                        <p>File descriptors (0-2 for stdin/stdout/stderr) and pipes enable powerful command chaining and I/O redirection strategies.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Advanced I/O redirection</div>
+                            <code class="syntax-code">cmd 2>&1 | tee output.log  # Capture all
+cmd > /dev/null 2>&1       # Discard output
+exec 3< file; read var <&3 # File descriptor
+mkfifo pipe; cat pipe &    # Named pipe
+ls | tee file1 file2       # Multi redirect</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commands Section -->
+        <div id="commands" class="tab-content" style="display:none;">
+            <div class="interactive-section">
+                <h2>⚡ Essential Commands</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Master these fundamental commands for daily Linux work:</p>
+
+                <div class="command-list">
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">ls</div>
+                        <div class="command-desc">List files and directories</div>
+                        <div class="command-example">ls -la</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Show all files with details in list format</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> ls --color=auto, ls -lh (human readable), ls -S (sort by size)
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">cd</div>
+                        <div class="command-desc">Change directory</div>
+                        <div class="command-example">cd /path/to/directory</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Navigate to a different directory</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> cd - (previous dir), cd without args (home), CDPATH variable
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">cat</div>
+                        <div class="command-desc">Display file contents</div>
+                        <div class="command-example">cat filename.txt</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">View entire file content on screen</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> cat -n (line numbers), cat -A (show all chars), cat file1 file2 > combined
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">cp</div>
+                        <div class="command-desc">Copy files and directories</div>
+                        <div class="command-example">cp -r source/ dest/</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Copy with -r for recursive directory copy</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> cp -P (preserve links), cp -a (archive mode), cp -u (update only)
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">mv</div>
+                        <div class="command-desc">Move or rename files</div>
+                        <div class="command-example">mv oldname newname</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Rename or move files between directories</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> mv -i (interactive), mv -v (verbose), atomic operation on same filesystem
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">rm</div>
+                        <div class="command-desc">Remove files and directories</div>
+                        <div class="command-example">rm -rf directory/</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">⚠️ Use carefully! -rf removes recursively</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> rm -i (confirm), rm -d (empty dirs), shred (secure delete)
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">grep</div>
+                        <div class="command-desc">Search text patterns</div>
+                        <div class="command-example">grep "pattern" file.txt</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Find lines matching a pattern</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> grep -E (extended regex), grep -r (recursive), grep -c (count)
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">find</div>
+                        <div class="command-desc">Search for files</div>
+                        <div class="command-example">find . -name "*.txt"</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Find files matching criteria recursively</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> find -exec, find -type f|d, find with predicates, xargs integration
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">chmod</div>
+                        <div class="command-desc">Change file permissions</div>
+                        <div class="command-example">chmod 755 script.sh</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Set read, write, execute permissions</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> chmod u+x (symbolic), chmod -R (recursive), umask, ACLs (setfacl)
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">mkdir</div>
+                        <div class="command-desc">Create directories</div>
+                        <div class="command-example">mkdir -p parent/child/</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">-p creates parent directories too</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> mkdir -m (set perms), mkdir with mode 777, shell brace expansion
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">tar</div>
+                        <div class="command-desc">Archive files</div>
+                        <div class="command-example">tar -czf archive.tar.gz folder/</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Create compressed archive</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> tar -j (bzip2), tar -x (extract), tar -C (change dir), incremental backups
+                        </div>
+                    </div>
+
+                    <div class="command-item">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <div class="command-name">ssh</div>
+                        <div class="command-desc">Secure shell access</div>
+                        <div class="command-example">ssh user@remote.host</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Connect to remote server securely</p>
+                        <div class="hidden-professional" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <strong>Pro Tips:</strong> ssh-keygen, ssh config file, ssh tunneling (-L/-R), scp for files
+                        </div>
+                    </div>
+
+                    <!-- Professional only commands -->
+                    <div class="command-item section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <div class="command-name">awk</div>
+                        <div class="command-desc">Pattern scanning and processing language</div>
+                        <div class="command-example">awk '{print $1, $NF}' file</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Powerful text processing with fields, regex, and programming constructs</p>
+                    </div>
+
+                    <div class="command-item section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <div class="command-name">sed</div>
+                        <div class="command-desc">Stream editor for filtering/transforming</div>
+                        <div class="command-example">sed 's/old/new/g' file</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Non-interactive editor for sed scripting and complex replacements</p>
+                    </div>
+
+                    <div class="command-item section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <div class="command-name">strace</div>
+                        <div class="command-desc">Trace system calls and signals</div>
+                        <div class="command-example">strace -e trace=file ls</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Debug applications by tracing syscalls, performance analysis</p>
+                    </div>
+
+                    <div class="command-item section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <div class="command-name">ltrace</div>
+                        <div class="command-desc">Trace library function calls</div>
+                        <div class="command-example">ltrace ./program</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Trace dynamic library calls for deeper debugging</p>
+                    </div>
+
+                    <div class="command-item section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <div class="command-name">ldd</div>
+                        <div class="command-desc">Print shared library dependencies</div>
+                        <div class="command-example">ldd /usr/bin/ls</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Analyze linked libraries and potential dependency issues</p>
+                    </div>
+
+                    <div class="command-item section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <div class="command-name">iproute2</div>
+                        <div class="command-desc">Advanced network configuration (ip command)</div>
+                        <div class="command-example">ip addr show; ip route show</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Modern replacement for ifconfig/route with advanced options</p>
+                    </div>
+                </div>
+
+                <div class="info-box note" style="margin-top: 2rem;">
+                    <strong>💡 Tip:</strong> Use <code style="background: rgba(0,217,255,0.1); padding: 0.2rem 0.5rem; border-radius: 3px;">man command</code> to view detailed documentation for any command.
+                </div>
+            </div>
+        </div>
+
+        <!-- Processes Section -->
+        <div id="processes" class="tab-content" style="display:none;">
+            <div class="interactive-section">
+                <h2>⚙️ Process Management</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Monitor and control running programs on your system:</p>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">👁️</div>Viewing Processes</h3>
+                        <p>See what's running on your system with these commands:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">View all processes</div>
+                            <code class="syntax-code">ps aux          # All processes with details
+top             # Real-time process monitor
+htop            # Interactive process viewer</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">🛑</div>Stopping Processes</h3>
+                        <p>Terminate running processes with kill signals:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Kill a process</div>
+                            <code class="syntax-code">kill PID              # Graceful termination
+kill -9 PID          # Force kill
+killall process_name # Kill by name</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">🔄</div>Background Jobs</h3>
+                        <p>Run processes in the background while using the terminal:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Background operations</div>
+                            <code class="syntax-code">command &              # Run in background
+Ctrl+Z                # Suspend current process
+bg                    # Resume in background
+fg                    # Bring to foreground
+jobs                  # List background jobs</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">📊</div>Process Signals & State</h3>
+                        <p>Understanding Linux signals and process states for advanced process control:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Signal handling</div>
+                            <code class="syntax-code">kill -l              # List all signals
+kill -SIGTERM pid    # Graceful shutdown
+kill -SIGKILL pid    # Force kill (cannot ignore)
+trap 'code' SIGTERM  # Shell signal handler
+ps aux | grep state  # View process states</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">⚡</div>CPU & Memory Profiling</h3>
+                        <p>Deep dive into process resource usage and performance bottlenecks:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Advanced monitoring</div>
+                            <code class="syntax-code">ps -eo pid,comm,%cpu,%mem --sort=-%mem
+pmap -d pid          # Memory mapping details
+/proc/[pid]/status   # Detailed process stats
+perf record -p pid   # CPU profiling
+valgrind --leak-check ./program  # Memory leaks</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🔀</div>Process Relationships</h3>
+                        <p>Understanding parent-child relationships, process groups, and sessions:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Process tree & relationships</div>
+                            <code class="syntax-code">pstree -p            # Process tree with PIDs
+ps -eo pid,ppid,cmd  # Parent-child view
+ps -eo pid,pgid,sid  # Process group and session
+ps j                 # Job control info
+/proc/[pid]/cwd      # Working directory</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users" class="tab-content" style="display:none;">
+            <div class="interactive-section">
+                <h2>👤 User & System Management</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Manage users, permissions, and system information:</p>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">🔐</div>User Information</h3>
+                        <p>Check who you are and what groups you belong to:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">User commands</div>
+                            <code class="syntax-code">whoami           # Current username
+id               # User ID and groups
+groups           # List your groups
+finger username  # User information</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">⚡</div>Superuser (sudo)</h3>
+                        <p>Execute commands with administrator privileges:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Sudo usage</div>
+                            <code class="syntax-code">sudo command        # Run with elevated privileges
+sudo -i             # Switch to root user
+sudo -l             # List sudo permissions</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">💾</div>System Information</h3>
+                        <p>Get details about your system and hardware:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">System info</div>
+                            <code class="syntax-code">uname -a         # System information
+df -h            # Disk space usage
+free -h          # Memory usage
+uptime           # System uptime</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">👥</div>User & Group Administration</h3>
+                        <p>Create, modify, and manage user accounts and groups with advanced options:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">User management</div>
+                            <code class="syntax-code">useradd -m -s /bin/bash user  # Create user
+usermod -aG group user         # Add to group
+userdel -r user                # Delete with home
+groupadd groupname             # Create group
+/etc/passwd, /etc/shadow       # User database files</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🔑</div>PAM & Authentication</h3>
+                        <p>Pluggable Authentication Modules for advanced authentication mechanisms:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">PAM configuration</div>
+                            <code class="syntax-code">/etc/pam.d/          # PAM configuration
+passwd -S user       # Check password status
+passwd -e user       # Expire password
+shadow -l            # Show shadow file format
+getent passwd user   # Query user database</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🛡️</div>SELinux & AppArmor</h3>
+                        <p>Mandatory Access Control systems for security enforcement at kernel level:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Security contexts</div>
+                            <code class="syntax-code">getenforce           # Check SELinux mode
+ls -Z                # Show SELinux context
+semanage fcontext -l # List contexts
+aa-status            # AppArmor status
+aa-audit             # Audit mode</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🔐</div>Sudo Configuration</h3>
+                        <p>Configure sudoers file for fine-grained privilege delegation and auditing:</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Sudoers management</div>
+                            <code class="syntax-code">visudo              # Safely edit sudoers
+sudo -l              # List permissions
+sudo -U user -l      # Check other user
+sudoedit /etc/file   # Safe file editing
+/var/log/auth.log    # Sudo audit log</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Networking Section -->
+        <div id="networking" class="tab-content" style="display:none;">
+            <div class="interactive-section">
+                <h2>🌐 Networking Basics & Troubleshooting</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Understand networking concepts, troubleshoot connections, and configure interfaces:</p>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">📡</div>Checking Connectivity</h3>
+                        <p>Test if your system is connected to the internet or another host.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Ping command</div>
+                            <code class="syntax-code">ping google.com       # Continuous ping
+ping -c 4 8.8.8.8     # Ping 4 times
+ping localhost        # Test local loopback</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">🌍</div>Network Interfaces</h3>
+                        <p>View your IP address and active network interfaces.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Interface info</div>
+                            <code class="syntax-code">ip a                  # View all IPs
+ip link show          # Show physical links
+ifconfig              # Legacy tool for IPs</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                        <h3><div class="card-icon">🔄</div>DNS Lookup</h3>
+                        <p>Find the IP address associated with a domain name.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">DNS resolution</div>
+                            <code class="syntax-code">nslookup domain.com   # Query DNS interactively
+host domain.com       # Simple DNS lookup
+dig domain.com        # Detailed DNS query</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🛣️</div>Routing & Path</h3>
+                        <p>Analyze network routes and trace the path packets take to a destination.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Network routing</div>
+                            <code class="syntax-code">ip route show         # Display routing table
+traceroute host       # Trace packet path
+mtr host              # Network diagnostic tool
+route -n              # Legacy routing table</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🔌</div>Open Ports</h3>
+                        <p>Identify listening ports and active network connections on your system.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Port scanning</div>
+                            <code class="syntax-code">ss -tuln              # Listening TCP/UDP ports
+netstat -tulpn        # Legacy ports command
+lsof -i :80           # Process using port 80
+nmap localhost        # Scan local ports</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🧱</div>Firewall Management</h3>
+                        <p>Configure what traffic is allowed in and out of your system.</p>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Firewall rules</div>
+                            <code class="syntax-code">ufw status            # Simple firewall status
+ufw allow 22/tcp      # Allow SSH port
+iptables -L           # Native iptables rules
+firewall-cmd --list-all # Firewalld status</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Terminal Section -->
+        <div id="terminal" class="tab-content" style="display:none;">
+            <div class="interactive-section">
+                <h2>🖥️ Linux Terminal Commands</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Quick-reference for essential terminal commands grouped by category:</p>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Navigation</div>
+                        <h3><div class="card-icon">📂</div>File Navigation</h3>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Navigate directories</div>
+                            <code class="syntax-code">pwd                  # Current directory
+ls -la               # List all files
+cd /path/to/dir      # Change directory
+cd ..                # Go up one level
+tree                 # Directory tree view
+du -sh *             # Disk usage per item</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Files</div>
+                        <h3><div class="card-icon">📝</div>File Operations</h3>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Create, view, edit files</div>
+                            <code class="syntax-code">touch file.txt       # Create empty file
+echo "hello" > f.txt # Write text to file
+less file.txt        # Scroll through file
+head -20 file.txt    # First 20 lines
+tail -f log.txt      # Follow log output
+wc -l file.txt       # Count lines</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Search</div>
+                        <h3><div class="card-icon">🔎</div>Searching & Filtering</h3>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Find text & files</div>
+                            <code class="syntax-code">grep -rn "text" .    # Search in all files
+locate filename      # Quick file locate
+find . -name "*.log" # Find by extension
+grep -i "Error" app.log  # Case-insensitive
+find . -mtime -1     # Modified today</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">System</div>
+                        <h3><div class="card-icon">📊</div>System Monitoring</h3>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Resources & performance</div>
+                            <code class="syntax-code">top                  # CPU & memory usage
+htop                 # Interactive monitor
+df -h                # Disk free space
+free -h              # RAM usage
+uptime               # System uptime
+vmstat 1             # Virtual memory stats</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Network</div>
+                        <h3><div class="card-icon">🌐</div>Network Commands</h3>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Network tools</div>
+                            <code class="syntax-code">ip addr              # Show IP addresses
+curl -I https://url  # HTTP headers
+wget https://url     # Download file
+ss -tuln             # Listening ports
+ping google.com      # Test connectivity
+nslookup domain.com  # DNS lookup</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="difficulty-badge difficulty-beginner">Archives</div>
+                        <h3><div class="card-icon">📦</div>Compress & Archive</h3>
+                        <div class="syntax-example">
+                            <div class="syntax-label">zip, tar, gzip</div>
+                            <code class="syntax-code">tar -czf out.tar.gz folder/  # Create
+tar -xzf archive.tar.gz      # Extract
+zip -r out.zip folder/       # Zip folder
+unzip file.zip               # Unzip
+gzip file.txt                # Compress file</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🔗</div>Pipes & Redirection</h3>
+                        <div class="syntax-example">
+                            <div class="syntax-label">I/O control</div>
+                            <code class="syntax-code">cmd | grep "text"     # Pipe output
+cmd > output.txt      # Redirect stdout
+cmd >> output.txt     # Append stdout
+cmd 2> error.log     # Redirect stderr
+cmd &                 # Run in background
+cmd1 && cmd2         # Run cmd2 if cmd1 OK</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">⚙️</div>Shell Shortcuts</h3>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Terminal keybindings</div>
+                            <code class="syntax-code">Ctrl+C           # Kill current process
+Ctrl+Z           # Suspend process
+Ctrl+D           # Exit / EOF
+Ctrl+R           # Search command history
+Ctrl+L           # Clear terminal
+!!               # Repeat last command
+!$               # Last arg of last cmd</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">📜</div>Bash Scripting</h3>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Script essentials</div>
+                            <code class="syntax-code">#!/bin/bash
+# Set strict mode
+set -euo pipefail
+
+for f in *.txt; do
+  echo "File: $f"
+done
+
+[ -f file ] && echo "exists"</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card section-pro-only">
+                        <div class="difficulty-badge difficulty-professional">Professional</div>
+                        <h3><div class="card-icon">🔒</div>Permissions</h3>
+                        <div class="syntax-example">
+                            <div class="syntax-label">Permission mastery</div>
+                            <code class="syntax-code">chmod 755 script.sh    # rwxr-xr-x
+chmod u+x script.sh    # Symbolic mode
+chown user:group file  # Change ownership
+umask 022             # Default perms
+getfacl file          # Show ACL
+setfacl -m u:bob:rw file  # Set ACL</code>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Command Modal -->
+    <div id="commandModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3>Explanation</h3>
+                    <p id="modalExplanation"></p>
+                </div>
+                <div class="modal-section">
+                    <h3>Syntax</h3>
+                    <div class="syntax-example">
+                        <code id="modalSyntax" class="syntax-code"></code>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                </div>
+                <div class="modal-section">
+                    <h3>Examples</h3>
+                    <div id="modalExamples"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Linux Pocket Guide - Interactive Learning Platform v1.1 | Built with ❤️ for Linux enthusiasts</p>
+        <p style="margin-top: 1rem; font-size: 0.85rem;">Based on "Linux Pocket Guide" by Daniel J. Barrett (O'Reilly Media)</p>
+    </footer>
+
+    <script>
+        let currentMode = 'beginner';
+
+        // Set learning mode
+        function setMode(mode) {
+            currentMode = mode;
+            document.body.className = `mode-${mode}`;
+            
+            // Update button states
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update mode info
+            const modeInfo = document.getElementById('modeInfo');
+            if (mode === 'beginner') {
+                modeInfo.innerHTML = '<strong>🟢 Beginner Mode:</strong> Start with the fundamentals. Clear explanations, simple examples, and core concepts for newcomers.';
+                modeInfo.classList.remove('pro');
+            } else {
+                modeInfo.innerHTML = '<strong>🔷 Professional Mode:</strong> Advanced topics, system-level operations, optimization, security, and enterprise Linux administration.';
+                modeInfo.classList.add('pro');
+            }
+
+            // Smooth scroll to show content change
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Tab switching
+        function showTab(tabName, btn) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.style.display = 'none');
+            
+            // Remove active state from all tabs
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab and mark the clicked button active
+            document.getElementById(tabName).style.display = 'block';
+            if (btn) btn.classList.add('active');
+        }
+
+        // Mobile nav toggle
+        function toggleNav() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('active');
+        }
+
+        // Close nav when link clicked
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mainNav').classList.remove('active');
+            });
+        });
+
+        // Copy code to clipboard
+        function copyCode(button) {
+            const codeBlock = button.parentElement.querySelector('.syntax-code');
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✓ Copied!';
+                button.style.background = 'var(--success)';
+                button.style.color = 'var(--bg-dark)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = 'var(--primary)';
+                    button.style.color = 'var(--bg-dark)';
+                }, 1500);
+            });
+        }
+
+        // Search functionality
+        function searchContent() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card, .command-item');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                
+                if (searchTerm === '') {
+                    card.style.display = 'block';
+                }
+            });
+        }
+
+        // Show basics section by default
+        const defaultTab = document.querySelector('.tab-btn');
+        showTab('basics', defaultTab);
+        if (defaultTab) defaultTab.classList.add('active');
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Animate on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.card, .command-item').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Command Data
+        const commandDetails = {
+            "ls": {
+                explanation: "List directory contents. Shows files and subdirectories in the specified directory (or current directory by default). Essential for navigating and exploring the filesystem.",
+                syntax: "ls [OPTION]... [FILE]...",
+                examples: [
+                    { desc: "List all files including hidden (.dot) files", code: "ls -a" },
+                    { desc: "Long listing format showing permissions, ownership, sizes, and timestamps", code: "ls -l" },
+                    { desc: "Human-readable file sizes with long format", code: "ls -lh" },
+                    { desc: "Sort recursively by file size, largest first", code: "ls -lS" }
+                ]
+            },
+            "cd": {
+                explanation: "Change the current working directory. Used to navigate through the filesystem hierarchy.",
+                syntax: "cd [DIRECTORY]",
+                examples: [
+                    { desc: "Navigate to a specific absolute path", code: "cd /etc/systemd" },
+                    { desc: "Go up one directory level", code: "cd .." },
+                    { desc: "Return to the previous directory you were in", code: "cd -" },
+                    { desc: "Go to your home directory", code: "cd ~" }
+                ]
+            },
+            "cat": {
+                explanation: "Concatenate files and print on the standard output. Typically used to view the contents of small log files, text documents, or combine multiple files.",
+                syntax: "cat [OPTION]... [FILE]...",
+                examples: [
+                    { desc: "View the contents of a file on the terminal", code: "cat /etc/os-release" },
+                    { desc: "Display contents with line numbers", code: "cat -n filename.txt" },
+                    { desc: "Combine two files into a new third file", code: "cat file1.txt file2.txt > combined.txt" },
+                    { desc: "Append the contents of file to another file", code: "cat file1.txt >> file2.txt" }
+                ]
+            },
+            "cp": {
+                explanation: "Copy files and directories from one location to another. Can copy single files or deeply nested folder structures recursively.",
+                syntax: "cp [OPTION]... SOURCE DEST",
+                examples: [
+                    { desc: "Copy a file into the same directory with a new name", code: "cp config.yml config_backup.yml" },
+                    { desc: "Copy a folder and all its contents recursively", code: "cp -r /source/folder /dest/folder" },
+                    { desc: "Prompt before overwriting an existing destination file", code: "cp -i file.txt /dest/" },
+                    { desc: "Preserve original file attributes (timestamp, ownership)", code: "cp -p file.txt /dest/" }
+                ]
+            },
+            "mv": {
+                explanation: "Move or rename files and directories. Removes the original file after copying its contents to the new destination.",
+                syntax: "mv [OPTION]... SOURCE DEST",
+                examples: [
+                    { desc: "Rename a file in the same directory", code: "mv old_name.txt new_name.txt" },
+                    { desc: "Move a file to a different directory", code: "mv config.json /etc/myapp/" },
+                    { desc: "Move multiple files into a directory", code: "mv file1 file2 /dest/folder/" },
+                    { desc: "Prompt before overwriting a file", code: "mv -i document.pdf /backup/" }
+                ]
+            },
+            "rm": {
+                explanation: "Remove files or directories completely. Unlike desktop systems, files removed with rm do not go to a recycle bin.",
+                syntax: "rm [OPTION]... FILE...",
+                examples: [
+                    { desc: "Remove a single file", code: "rm unused.log" },
+                    { desc: "Remove a file with interactive prompt for safety", code: "rm -i sensitive.key" },
+                    { desc: "Forcefully remove a directory and all contained files", code: "rm -rf /tmp/cache_folder" },
+                    { desc: "Remove empty directories only", code: "rm -d empty_folder" }
+                ]
+            },
+            "grep": {
+                explanation: "Global Regular Expression Print. Searches input files for lines containing a match to a given pattern and outputs the matching lines.",
+                syntax: "grep [OPTIONS] PATTERN [FILE...]",
+                examples: [
+                    { desc: "Search for a specific string in a file", code: "grep \"error\" /var/log/syslog" },
+                    { desc: "Case-insensitive search", code: "grep -i \"Warning\" app.log" },
+                    { desc: "Recursively search all files in current directory", code: "grep -r \"function main()\" ." },
+                    { desc: "Invert match: show lines that do NOT contain the pattern", code: "grep -v \"DEBUG\" trace.log" }
+                ]
+            },
+            "find": {
+                explanation: "Search for files in a directory hierarchy based on criteria like name, size, type, or modification time, and perform actions on them.",
+                syntax: "find [path...] [expression]",
+                examples: [
+                    { desc: "Find a file by exact name in current directory and subdirectories", code: "find . -name \"config.json\"" },
+                    { desc: "Find all directories matching a pattern", code: "find /var/www -type d -name \"cache*\"" },
+                    { desc: "Find files larger than 100MB", code: "find / -size +100M" },
+                    { desc: "Find files modified in the last 7 days", code: "find . -mtime -7" }
+                ]
+            },
+            "chmod": {
+                explanation: "Change mode/permissions of a file or directory. Determines who can read, write, or execute the file (User/Group/Others).",
+                syntax: "chmod [OPTIONS] MODE FILE...",
+                examples: [
+                    { desc: "Make a script executable for the owner", code: "chmod u+x script.sh" },
+                    { desc: "Give read/write to owner, read to everyone else (Octal)", code: "chmod 644 document.txt" },
+                    { desc: "Give total access to owner, read/execute to others (Octal)", code: "chmod 755 app_binary" },
+                    { desc: "Recursively change permissions on a folder", code: "chmod -R 755 /var/www/html" }
+                ]
+            },
+            "mkdir": {
+                explanation: "Make directories. Used to create new empty folders in the filesystem.",
+                syntax: "mkdir [OPTION]... DIRECTORY...",
+                examples: [
+                    { desc: "Create a single directory", code: "mkdir projects" },
+                    { desc: "Create nested parent/child directories all at once", code: "mkdir -p src/main/java" },
+                    { desc: "Create a directory with specific permissions defined", code: "mkdir -m 700 private_keys" },
+                    { desc: "Create multiple directories at the same level", code: "mkdir {docs,src,build,tests}" }
+                ]
+            },
+            "tar": {
+                explanation: "Tape Archive. Used to bundle multiple files into one archive, and optionally compress it using gzip or bzip2.",
+                syntax: "tar [OPTION...] [FILE]...",
+                examples: [
+                    { desc: "Create a compressed gzip archive (.tar.gz)", code: "tar -czf backup.tar.gz /path/to/directory" },
+                    { desc: "Extract an existing gzip archive", code: "tar -xzf archive.tar.gz" },
+                    { desc: "List the contents of an archive without extracting", code: "tar -tvf archive.tar.gz" },
+                    { desc: "Extract into a specific target directory", code: "tar -xzf app.tar.gz -C /opt/" }
+                ]
+            },
+            "ssh": {
+                explanation: "Secure Shell. Provides a secure automated remote login over an unsecured network to execute commands on remote systems.",
+                syntax: "ssh [USER@]HOSTNAME",
+                examples: [
+                    { desc: "Connect to a remote server using a specific user", code: "ssh admin@192.168.1.50" },
+                    { desc: "Connect using a specific physical SSH key", code: "ssh -i ~/.ssh/aws_key.pem root@server" },
+                    { desc: "Connect using a non-standard port", code: "ssh -p 2200 user@host" },
+                    { desc: "Run a command on remote server and display output", code: "ssh user@host 'df -h'" }
+                ]
+            },
+            "awk": {
+                explanation: "A powerful text pattern scanning and processing language. Excellent for filtering log files and column-based data parsing.",
+                syntax: "awk [options] 'script' var=value file(s)",
+                examples: [
+                    { desc: "Print the 1st and 3rd column of a file", code: "awk '{print $1, $3}' data.txt" },
+                    { desc: "Use colon as a delimiter and print usernames from /etc/passwd", code: "awk -F':' '{print $1}' /etc/passwd" },
+                    { desc: "Print the length of the longest line in a file", code: "awk '{ if (length($0) > max) max = length($0) } END { print max }' file.txt" },
+                    { desc: "Calculate sum of numbers in the second column", code: "awk '{sum+=$2} END {print sum}' sales.txt" }
+                ]
+            },
+            "sed": {
+                explanation: "Stream Editor. Used to perform basic text transformations on an input stream (a file or input from a pipeline). Famous for find-and-replace.",
+                syntax: "sed [OPTIONS] 'SCRIPT' INPUTFILE...",
+                examples: [
+                    { desc: "Replace the first occurrence of 'apple' with 'orange' on every line", code: "sed 's/apple/orange/' fruits.txt" },
+                    { desc: "Replace all occurrences globally on every line", code: "sed 's/apple/orange/g' fruits.txt" },
+                    { desc: "Edit file in-place (save changes back to the original file)", code: "sed -i 's/127.0.0.1/0.0.0.0/g' config.yml" },
+                    { desc: "Print only lines 5 through 10 of a file", code: "sed -n '5,10p' large_file.log" }
+                ]
+            },
+            "strace": {
+                explanation: "Trace system calls and signals. Excellent for debugging processes to see exactly how they interact with the Linux kernel and what IO operations are failing.",
+                syntax: "strace [OPTIONS] COMMAND",
+                examples: [
+                    { desc: "Trace system calls of an executable program", code: "strace ./my_program" },
+                    { desc: "Attach to a running standalone process by PID", code: "strace -p 1234" },
+                    { desc: "Trace only file-related system calls", code: "strace -e trace=file cat hidden.txt" },
+                    { desc: "Count time, calls, and errors for each system call", code: "strace -c ./my_program" }
+                ]
+            },
+            "ltrace": {
+                explanation: "Library Call Tracer. Traces dynamic library calls made by a process. Useful for reversing and debugging without source code.",
+                syntax: "ltrace [OPTIONS] COMMAND",
+                examples: [
+                    { desc: "Trace standard C library calls", code: "ltrace ./my_program" },
+                    { desc: "Attach to an already running process", code: "ltrace -p 4321" },
+                    { desc: "Trace all calls to a specific library (e.g. libc)", code: "ltrace -l /lib/x86_64-linux-gnu/libc.so.6 ./program" }
+                ]
+            },
+            "ldd": {
+                explanation: "List Dynamic Dependencies. Prints the shared objects (libraries) required by an executable or shared object.",
+                syntax: "ldd [OPTION]... FILE...",
+                examples: [
+                    { desc: "Show libraries required by a binary", code: "ldd /bin/bash" },
+                    { desc: "Show all libraries including unused direct dependencies", code: "ldd -u /usr/local/bin/app" }
+                ]
+            },
+            "iproute2": {
+                explanation: "A collection of utilities (accessed via the 'ip' command) for controlling TCP/IP networking and traffic control in Linux.",
+                syntax: "ip [ OPTIONS ] OBJECT { COMMAND | help }",
+                examples: [
+                    { desc: "Display IP addresses and properties for all network interfaces", code: "ip addr show" },
+                    { desc: "Bring up or disable a network interface", code: "ip link set dev eth0 up" },
+                    { desc: "Display the active routing table", code: "ip route show" },
+                    { desc: "Add a new static route", code: "ip route add 192.168.2.0/24 via 192.168.1.1" }
+                ]
+            }
+        };
+
+        function openModal(commandName) {
+            const data = commandDetails[commandName];
+            if(!data) return;
+
+            document.getElementById('modalTitle').textContent = commandName;
+            document.getElementById('modalExplanation').textContent = data.explanation;
+            document.getElementById('modalSyntax').textContent = data.syntax;
+            
+            const examplesContainer = document.getElementById('modalExamples');
+            examplesContainer.innerHTML = '';
+            
+            data.examples.forEach(ex => {
+                const block = document.createElement('div');
+                block.className = 'example-block';
+                block.innerHTML = `
+                    <div class="example-desc">${ex.desc}</div>
+                    <div class="example-code-area syntax-example" style="margin: 0; border: none; border-radius: 0;">
+                        <code class="syntax-code">${ex.code}</code>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                `;
+                examplesContainer.appendChild(block);
+            });
+
+            const modal = document.getElementById('commandModal');
+            modal.style.display = 'flex';
+            // Trigger reflow for animation
+            void modal.offsetWidth;
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('commandModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // Close on outside click
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('commandModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Setup click listeners for command items
+        document.querySelectorAll('.command-item').forEach(item => {
+            const nameEl = item.querySelector('.command-name');
+            if (nameEl) {
+                item.style.cursor = 'pointer';
+                const cmdName = nameEl.textContent.trim();
+                item.title = "Click for detailed examples and syntax";
+                
+                item.addEventListener('click', (e) => {
+                    // Don't open modal if they clicked a copy button inside the card or similar interactive element
+                    if (e.target.tagName.toLowerCase() !== 'button') {
+                        openModal(cmdName);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
